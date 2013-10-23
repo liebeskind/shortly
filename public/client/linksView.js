@@ -8,7 +8,7 @@ Shortly.LinksView = Backbone.View.extend({
   sortBy: 'visits',
 
   template: _.template('<form><input class="text" type="text" name="url" autofocus= "autofocus"><input type="submit" value="Search"></form> \
-    <form><input type="radio" name="sortBy" value="visits">Visits<br> <input type="radio" name="sortBy" value="createdAt">Created</form>) '),
+    <form><input type="radio" name="sortBy" value="visits">Visits<br> <input type="radio" name="sortBy" value="createdAt">Created</form> '),
 
 
   initialize: function(){
@@ -42,12 +42,12 @@ Shortly.LinksView = Backbone.View.extend({
 
   reSort: function(){
     this.sortBy = $('input[name=sortBy]:checked').val();
-    $('.link').remove();
-    this.orderedList = [];
     this.addAll();
   },
 
   addAll: function(){
+    $('.link').remove();
+    this.orderedList = [];
     var sortBy = this.sortBy;
     console.log(this.sortBy);
     this.collection.forEach(this.addOne, this);
