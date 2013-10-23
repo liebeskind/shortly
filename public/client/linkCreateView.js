@@ -4,7 +4,7 @@ Shortly.LinkCreateView = Backbone.View.extend({
 
   template: _.template(' \
     <form> \
-        <input class="text" type="text" name="url"> \
+        <input class="text" type="text" name="url" autofocus= "autofocus"> \
         <input type="submit" value="Shorten"> \
     </form> \
     <img class="spinner" src="/spiffygif_46x46.gif"> \

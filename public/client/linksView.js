@@ -4,13 +4,36 @@ Shortly.LinksView = Backbone.View.extend({
 
   orderedList: [],
 
+  filter: '',
+
+  template: _.template('<form><input class="text" type="text" name="url" autofocus= "autofocus"><input type="submit" value="Search"></form>'),
+
+
   initialize: function(){
     this.collection.on('sync', this.addAll, this);
     this.collection.fetch();
   },
 
+  events: {
+    "submit": "filterUrl"
+  },
+
+  filterUrl: function(e){
+    e.preventDefault();
+    var $form = this.$el.find('form .text');
+    var searchRegExp = RegExp($form.val(), "i"); //turns the form submitted text into a RegEx for filtering
+    this.orderedList.forEach(function(view){
+      $(view.el).removeClass('hidden');
+      if (!(searchRegExp.test(view.model.attributes.title) || searchRegExp.test(view.model.attributes.url))) {  //tests whether regex contained in title or url
+        $(view.el).addClass('hidden');
+      }
+    }, this);
+    $form.val('');
+  },
+
   render: function() {
     this.$el.empty();
+    this.$el.html( this.template() );
     return this;
   },
 
