@@ -5,8 +5,10 @@ Shortly.LinksView = Backbone.View.extend({
   orderedList: [],
 
   filter: '',
+  sortBy: 'visits',
 
-  template: _.template('<form><input class="text" type="text" name="url" autofocus= "autofocus"><input type="submit" value="Search"></form>'),
+  template: _.template('<form><input class="text" type="text" name="url" autofocus= "autofocus"><input type="submit" value="Search"></form> \
+    <form><input type="radio" name="sortBy" value="visits">Visits<br> <input type="radio" name="sortBy" value="createdAt">Created</form>) '),
 
 
   initialize: function(){
@@ -15,7 +17,8 @@ Shortly.LinksView = Backbone.View.extend({
   },
 
   events: {
-    "submit": "filterUrl"
+    "submit": "filterUrl",
+    "click input[name=sortBy]:checked": "reSort"
   },
 
   filterUrl: function(e){
@@ -37,13 +40,20 @@ Shortly.LinksView = Backbone.View.extend({
     return this;
   },
 
+  reSort: function(){
+    this.sortBy = $('input[name=sortBy]:checked').val();
+    $('.link').remove();
+    this.orderedList = [];
+    this.addAll();
+  },
+
   addAll: function(){
+    var sortBy = this.sortBy;
+    console.log(this.sortBy);
     this.collection.forEach(this.addOne, this);
     this.orderedList.sort(function(a, b){
-      console.log(a.model.attributes);
-      return b.model.attributes.visits - a.model.attributes.visits;
+      return b.model.get(sortBy) - a.model.get(sortBy);
     });
-    console.log(this.orderedList);
     this.orderedList.forEach(function(view) {
       this.$el.append(view.render().el);
     }, this);
@@ -51,7 +61,6 @@ Shortly.LinksView = Backbone.View.extend({
 
   addOne: function(item){
     var view = new Shortly.LinkView( {model: item} );
-    console.log(view);
     this.orderedList.push(view);
   }
 });
