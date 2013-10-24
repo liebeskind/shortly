@@ -11,7 +11,7 @@ window.Shortly = Backbone.View.extend({
       <div id="container"></div>'
   ),
 
-  events: {
+  events: {  //we want the backbone router to take care of these events
     "click li a.index":  "renderIndexView",
     "click li a.create": "renderCreateView"
   },
@@ -19,7 +19,27 @@ window.Shortly = Backbone.View.extend({
   initialize: function(){
     console.log( "Shortly is running" );
     $('body').append(this.render().el);
-    this.renderIndexView(); // default view
+    var that = this;
+
+    this.AppRouter = Backbone.Router.extend({
+        routes: {
+            "index": "index",
+            "shorten": "shorten"
+        },
+        index: function(){
+          that.renderIndexView();
+        },
+        shorten: function(){
+          that.renderCreateView();
+        }
+    });
+    // Initiate the router
+    this.app_router = new this.AppRouter();
+
+    // Starts Backbone history a necessary step for bookmarkable URL's
+    Backbone.history.start({
+        pushState: true
+    });
   },
 
   render: function(){
@@ -28,6 +48,7 @@ window.Shortly = Backbone.View.extend({
   },
 
   renderIndexView: function(e){
+    this.app_router.navigate('#index');
     e && e.preventDefault();
     var links = new Shortly.Links();
     var linksView = new Shortly.LinksView( {collection: links} );
@@ -36,6 +57,7 @@ window.Shortly = Backbone.View.extend({
   },
 
   renderCreateView: function(e){
+    this.app_router.navigate('#shorten');
     e && e.preventDefault();
     var linkCreateView = new Shortly.LinkCreateView();
     this.$el.find('#container').html( linkCreateView.render().el );
