@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "../"))
 require 'shortly'
 require 'rack/test'
 
+
 set :environment, :test
 
 configure :test do

@@ -5,6 +5,12 @@ require 'digest/sha1'
 require 'pry'
 require 'uri'
 require 'open-uri'
+require 'bcrypt'
+
+enable :sessions
+
+userTable = {}
+
 # require 'nokogiri'
 
 ###########################################################
@@ -54,18 +60,83 @@ end
 ###########################################################
 # Routes
 ###########################################################
+helpers do
+  def login?
+    if session[:username].nil?
+      return false
+    else
+      return true
+    end
+  end
+
+  def username
+    return session[:username]
+  end
+
+end
 
 get '/' do
-    erb :index
+  @message = "Please sign in"
+  erb :signIn
 end
 
 get '/index' do
+  if login?
     erb :index
+  else
+    erb :signIn
+  end
 end
 
 get '/shorten' do
+  if login?
     erb :index
+  else
+    erb :signIn
+  end
 end
+
+post '/signup' do
+  password_salt = BCrypt::Engine.generate_salt
+  password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
+
+  if userTable[params[:username]].nil?
+    userTable[params[:username]] = {:password => password_hash, :password_salt => password_salt}
+    redirect '/index'
+    session[:username] = username
+  else
+    erb(:signIn, {message => "Already a username, sorry"})
+  end
+end
+
+get '/signin' do
+  password = params[:password]
+  username = params[:username]
+  puts userTable[username]
+  puts username
+  if userTable[username].nil?
+    @message = "Not a username, sorry"
+    erb :signIn
+  else
+    password_salt = userTable[username][:password_salt]
+    password_hash = BCrypt::Engine.hash_secret(password, password_salt)
+
+    if password_hash == userTable[username][:password]
+        session[:username] = username
+        redirect '/index'
+    else
+      @message = "Incorrect password"
+      erb :signIn
+    end
+  end
+end
+
+get '/logout' do
+  session[:username] = nil
+  erb(:signIn, {message => "You logged out successfully"})
+end
+
+
 
 get '/links' do
     links = Link.order("created_at DESC")

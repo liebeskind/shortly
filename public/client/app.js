@@ -6,6 +6,7 @@ window.Shortly = Backbone.View.extend({
       <ul> \
         <li><a href="#" class="index">All Links</a></li> \
         <li><a href="#" class="create">Shorten</a></li> \
+        <li><a href = "/logout">Logout</a></li> \
       </ul> \
       </div> \
       <div id="container"></div>'
